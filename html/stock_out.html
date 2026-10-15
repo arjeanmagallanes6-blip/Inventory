@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Warehouse - Stock Out</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .nav-icon { font-style: normal; margin-right: 8px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">📦</div>
+      <h2>ABC Warehouse<br><span style="font-size:11px; font-weight:400; opacity:0.8;">School Supply</span></h2>
+    </div>
+
+    <nav>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="nav-icon">📊</i> Inventory</a></li>
+        <li class="nav-item"><a href="product_master.html" class="nav-link"><i class="nav-icon">📋</i> Product Master</a></li>
+        <li class="nav-item"><a href="purchase_orders.html" class="nav-link"><i class="nav-icon">📑</i> Purchase Orders</a></li>
+        <li class="nav-item"><a href="stock_in.html" class="nav-link"><i class="nav-icon">📥</i> Stock In</a></li>
+        <li class="nav-item"><a href="stock_out.html" class="nav-link active"><i class="nav-icon">📤</i> Stock Out</a></li>
+        <li class="nav-item"><a href="shelf.html" class="nav-link"><i class="nav-icon">🗄️</i> Shelves</a></li>
+        <li class="nav-item"><a href="supplier.html" class="nav-link"><i class="nav-icon">🚚</i> Suppliers</a></li>
+        <li class="nav-item"><a href="item_supplier.html" class="nav-link"><i class="nav-icon">🔗</i> Item-Supplier Mapping</a></li>
+        <li class="nav-item"><a href="category.html" class="nav-link"><i class="nav-icon">📁</i> Category</a></li>
+        <li class="nav-item"><a href="brand.html" class="nav-link"><i class="nav-icon">🏷️</i> Brand</a></li>
+        <li class="nav-item"><a href="units.html" class="nav-link"><i class="nav-icon">📏</i> Units</a></li>
+        <li class="nav-item"><a href="stock_adjustment.html" class="nav-link"><i class="nav-icon">⚖️</i> Stock Adjustment</a></li>
+        <li class="nav-item"><a href="payments.html" class="nav-link"><i class="nav-icon">💳</i> Payments</a></li>
+        <li class="nav-item"><a href="returns.html" class="nav-link"><i class="nav-icon">↩️</i> Customer Returns</a></li>
+        <li class="nav-item"><a href="purchase_returns.html" class="nav-link"><i class="nav-icon">📦</i> Purchase Returns</a></li>
+        <li class="nav-item"><a href="users.html" class="nav-link"><i class="nav-icon">👥</i> Users &amp; Roles</a></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" id="logoutBtn" class="nav-link"><i class="nav-icon">🚪</i> Log out</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <span class="page-title">Stock Out Transactions</span>
+      <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#stockOutModal">- Add Stock Out</button>
+    </header>
+
+    <div class="content-area">
+      <div class="data-table-container">
+        <table class="table table-hover align-middle mb-0 table-compact">
+          <thead>
+            <tr>
+              <th>Stock Out No.</th>
+              <th>Item Name</th>
+              <th>Qty Dispatched</th>
+              <th>Dispatched By</th>
+              <th>Date Dispatched</th>
+            </tr>
+          </thead>
+          <tbody id="stockOutTableBody">
+            <tr><td colspan="5" class="text-center">Loading stock out entries...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Stock Out Modal -->
+<div class="modal fade" id="stockOutModal" tabindex="-1" aria-labelledby="stockOutModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="stockOutForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stockOutModalLabel">Add Stock Out Transaction</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="modalAlert" class="alert d-none py-2 mb-3"></div>
+
+          <div class="mb-3">
+            <label for="stock_item_id" class="form-label">Select Item *</label>
+            <select class="form-select" id="stock_item_id" name="item_id" required>
+              <option value="">Loading items...</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity Dispatched *</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveStockBtn">Save Dispatch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/stock_out.js"></script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Warehouse - Product Master</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .content-area {
+            max-width: 100% !important;
+            margin: 0 !important;
+        }
+
+        /* Compact Search & Filter Bar */
+        .filter-bar-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            padding: 8px 12px !important;
+            margin-bottom: 12px;
+        }
+
+        .filter-flex {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-flex .search-box { width: 220px; }
+        .filter-flex .select-box { width: 140px; }
+
+        /* Lapad sa table card ning page */
+        .data-table-container:has(> table.table-compact) {
+            width: 90% !important;
+        }
+
+        /* Mas gamay nga padding kay daghan ang columns */
+        table.table-compact th,
+        table.table-compact td {
+            padding: 8px 14px !important;
+        }
+
+        /* Vertical Badge Stacking Container */
+        .supplier-badges-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 3px;
+            min-width: 190px;
+            max-width: 240px;
+        }
+
+        .supplier-badges-vertical .badge {
+            white-space: normal;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 6px;
+            line-height: 1.2;
+        }
+
+        /* Custom Modal Styling - FIX APPLIED HERE */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto; /* Punoan og vertical scrollbar sa outer overlay */
+            padding: 20px 0;
+        }
+
+        .custom-modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 650px;
+            max-height: 90vh; /* Mo-fit sa screen window */
+            overflow-y: auto; /* Tugotan ang pag-scroll sa sulod sa modal form */
+        }
+
+        .nav-icon {
+            font-style: normal;
+            margin-right: 8px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">📦</div>
+      <h2>ABC Warehouse<br><span style="font-size:11px; font-weight:400; opacity:0.8;">School Supply</span></h2>
+    </div>
+
+    <nav>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="nav-icon">📊</i> Inventory</a></li>
+        <li class="nav-item"><a href="product_master.html" class="nav-link active"><i class="nav-icon">📋</i> Product Master</a></li>
+        <li class="nav-item"><a href="purchase_orders.html" class="nav-link"><i class="nav-icon">📑</i> Purchase Orders</a></li>
+        <li class="nav-item"><a href="stock_in.html" class="nav-link"><i class="nav-icon">📥</i> Stock In</a></li>
+        <li class="nav-item"><a href="stock_out.html" class="nav-link"><i class="nav-icon">📤</i> Stock Out</a></li>
+        <li class="nav-item"><a href="shelf.html" class="nav-link"><i class="nav-icon">🗄️</i> Shelves</a></li>
+        <li class="nav-item"><a href="supplier.html" class="nav-link"><i class="nav-icon">🚚</i> Suppliers</a></li>
+        <li class="nav-item"><a href="item_supplier.html" class="nav-link"><i class="nav-icon">🔗</i> Item-Supplier Mapping</a></li>
+        <li class="nav-item"><a href="category.html" class="nav-link"><i class="nav-icon">📁</i> Category</a></li>
+        <li class="nav-item"><a href="brand.html" class="nav-link"><i class="nav-icon">🏷️</i> Brand</a></li>
+        <li class="nav-item"><a href="units.html" class="nav-link"><i class="nav-icon">📏</i> Units</a></li>
+        <li class="nav-item"><a href="stock_adjustment.html" class="nav-link"><i class="nav-icon">⚖️</i> Stock Adjustment</a></li>
+        <li class="nav-item"><a href="payments.html" class="nav-link"><i class="nav-icon">💳</i> Payments</a></li>
+        <li class="nav-item"><a href="returns.html" class="nav-link"><i class="nav-icon">↩️</i> Customer Returns</a></li>
+        <li class="nav-item"><a href="purchase_returns.html" class="nav-link"><i class="nav-icon">📦</i> Purchase Returns</a></li>
+        <li class="nav-item"><a href="users.html" class="nav-link"><i class="nav-icon">👥</i> Users &amp; Roles</a></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" id="logoutBtn" class="nav-link"><i class="nav-icon">🚪</i> Log out</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <span class="page-title">Product Master</span>
+      <div>
+        <button class="btn btn-primary btn-sm" id="openAddModalBtn" style="white-space: nowrap;">+ Add New Product</button>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <div class="filter-bar-container">
+        <div class="filter-flex">
+          <div class="search-box">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light border-end-0 text-muted">🔍</span>
+              <input type="text" id="searchInput" class="form-control bg-light border-start-0" placeholder="Search product name...">
+            </div>
+          </div>
+          <div class="select-box">
+            <select id="filterCategory" class="form-select form-select-sm bg-light">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div class="select-box">
+            <select id="filterBrand" class="form-select form-select-sm bg-light">
+              <option value="">All Brands</option>
+            </select>
+          </div>
+          <div class="select-box">
+            <select id="sortOrder" class="form-select form-select-sm bg-light">
+              <option value="name_asc">Sort: A - Z</option>
+              <option value="name_desc">Sort: Z - A</option>
+              <option value="category_asc">Category: A - Z</option>
+              <option value="brand_asc">Brand: A - Z</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-table-container">
+        <table class="table-compact">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th>Brand</th>
+              <th>Supplier(s)</th>
+              <th>Unit</th>
+              <th>Shelf</th>
+              <th>Selling Price</th>
+              <th>Unit Price</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody">
+            <tr>
+              <td colspan="9" style="text-align:center;">Loading products...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="productModal" class="custom-modal">
+  <div class="custom-modal-content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="m-0" id="modalTitle">Add New Product</h5>
+      <button type="button" class="btn-close" id="closeModalBtn"></button>
+    </div>
+    
+    <div id="formAlert" class="alert d-none py-2"></div>
+
+    <form id="productForm">
+      <input type="hidden" id="item_id" name="item_id">
+
+      <div class="mb-3">
+        <label for="item_name" class="form-label">Product Name *</label>
+        <input type="text" id="item_name" name="item_name" class="form-control" placeholder="e.g. Intermediate Writing Pad" required>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="category_id" class="form-label">Category *</label>
+          <select id="category_id" name="category_id" class="form-select" required></select>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="brand_id" class="form-label">Brand</label>
+          <select id="brand_id" name="brand_id" class="form-select"></select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="supplier_ids" class="form-label">Suppliers (Hold Ctrl / Cmd to select multiple)</label>
+        <select id="supplier_ids" name="supplier_ids[]" class="form-select" multiple style="height: 100px;"></select>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="unit_id" class="form-label">Unit *</label>
+          <select id="unit_id" name="unit_id" class="form-select" required></select>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="shelf_id" class="form-label">Shelf Location*</label>
+          <select id="shelf_id" name="shelf_id" class="form-select" required></select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="selling_price" class="form-label">Selling Price *</label>
+          <input type="number" step="0.01" id="selling_price" name="selling_price" class="form-control" placeholder="0.00" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="unit_price" class="form-label">Unit Cost / Price *</label>
+          <input type="number" step="0.01" id="unit_price" name="unit_price" class="form-control" placeholder="0.00" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="minimum_stock" class="form-label">Min Stock Level</label>
+          <input type="number" id="minimum_stock" name="minimum_stock" class="form-control" value="0">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="maximum_stock" class="form-label">Max Stock Level</label>
+          <input type="number" id="maximum_stock" name="maximum_stock" class="form-control" value="0">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea id="description" name="description" class="form-control" rows="2"></textarea>
+      </div>
+
+      <div class="text-end pt-2">
+        <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveProductBtn">Save Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../js/product_master.js"></script>
+</body>
+</html>  

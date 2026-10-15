@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Warehouse - Dashboard</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* Limit main layout width to keep elements close together */
+        .content-area {
+            max-width: 850px !important; /* Dili na mo-stretch sa tibuok screen */
+            margin: 0 !important;
+        }
+
+        /* Compact Stat Cards (Nagsikit sa left side) */
+        .grid-stats {
+            display: flex !important;
+            flex-wrap: wrap;
+            gap: 12px !important; /* Gamay ra nga gintang sa mga cards */
+            justify-content: flex-start !important;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            width: 220px !important; /* Fixed width para dili ma-elongate */
+            flex: 0 0 220px !important;
+            padding: 12px 16px !important;
+        }
+
+        .stat-card .title {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .value {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        /* Compact Table Layout */
+        .data-table-container {
+            max-width: 850px !important;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        table {
+            width: 100%;
+            table-layout: fixed; /* Subay sa explicit column widths below */
+            border-collapse: collapse;
+        }
+
+        /* Explicit tight widths para magduol ang mga columns */
+        table th:nth-child(1), table td:nth-child(1) { width: 300px; } /* Item Name */
+        table th:nth-child(2), table td:nth-child(2) { width: 200px; } /* Category */
+        table th:nth-child(3), table td:nth-child(3) { width: 140px; } /* In Stock */
+        table th:nth-child(4), table td:nth-child(4) { width: 160px; } /* Status */
+
+        table th, table td {
+            padding: 10px 14px !important; /* Pahuot nga padding */
+            text-align: left;
+        }
+
+        /* Animations & Status Badges */
+        @keyframes pulse-blink {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes badge-flash {
+            0%, 100% { background-color: #D3453C; color: #FFFFFF; }
+            50% { background-color: #FF8800; color: #FFFFFF; box-shadow: 0 0 10px rgba(211, 69, 60, 0.8); }
+        }
+
+        .badge-blink {
+            animation: badge-flash 1.2s infinite ease-in-out;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .card-blink {
+            animation: pulse-blink 1.8s infinite ease-in-out;
+            border: 1px solid #D3453C !important;
+        }
+
+        .blink-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #D3453C;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            animation: pulse-blink 1s infinite;
+        }
+
+        .row-warning {
+            background-color: rgba(211, 69, 60, 0.05);
+        }
+
+        .nav-icon {
+            font-style: normal;
+            margin-right: 8px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">📦</div>
+      <h2>ABC Warehouse<br><span style="font-size:11px; font-weight:400; opacity:0.8;">School Supply</span></h2>
+    </div>
+
+    <nav>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="dashboard.html" class="nav-link active"><i class="nav-icon">📊</i> Inventory</a></li>
+        <li class="nav-item"><a href="product_master.html" class="nav-link"><i class="nav-icon">📋</i> Product Master</a></li>
+        <li class="nav-item"><a href="purchase_orders.html" class="nav-link"><i class="nav-icon">📑</i> Purchase Orders</a></li>
+        <li class="nav-item"><a href="stock_in.html" class="nav-link"><i class="nav-icon">📥</i> Stock In</a></li>
+        <li class="nav-item"><a href="stock_out.html" class="nav-link"><i class="nav-icon">📤</i> Stock Out</a></li>
+        <li class="nav-item"><a href="shelf.html" class="nav-link"><i class="nav-icon">🗄️</i> Shelves</a></li>
+        <li class="nav-item"><a href="supplier.html" class="nav-link"><i class="nav-icon">🚚</i> Suppliers</a></li>
+        <li class="nav-item"><a href="item_supplier.html" class="nav-link"><i class="nav-icon">🔗</i> Item-Supplier Mapping</a></li>
+        <li class="nav-item"><a href="category.html" class="nav-link"><i class="nav-icon">📁</i> Category</a></li>
+        <li class="nav-item"><a href="brand.html" class="nav-link"><i class="nav-icon">🏷️</i> Brand</a></li>
+        <li class="nav-item"><a href="units.html" class="nav-link"><i class="nav-icon">📏</i> Units</a></li>
+        <li class="nav-item"><a href="stock_adjustment.html" class="nav-link"><i class="nav-icon">⚖️</i> Stock Adjustment</a></li>
+        <li class="nav-item"><a href="payments.html" class="nav-link"><i class="nav-icon">💳</i> Payments</a></li>
+        <li class="nav-item"><a href="returns.html" class="nav-link"><i class="nav-icon">↩️</i> Customer Returns</a></li>
+        <li class="nav-item"><a href="purchase_returns.html" class="nav-link"><i class="nav-icon">📦</i> Purchase Returns</a></li>
+        <li class="nav-item"><a href="users.html" class="nav-link"><i class="nav-icon">👥</i> Users &amp; Roles</a></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" id="logoutBtn" class="nav-link"><i class="nav-icon">🚪</i> Log out</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <span class="page-title"><span class="blink-dot"></span>Inventory Overview</span>
+      <span class="user-badge">User: <strong id="userNameDisplay">Loading...</strong></span>
+    </header>
+
+    <div class="content-area">
+      <div class="grid-stats">
+        <div class="stat-card">
+          <div class="title">Total In-Stock Units</div>
+          <div class="value" id="totalStockDisplay">0</div>
+        </div>
+        <div class="stat-card" id="lowStockCard">
+          <div class="title">Low Stock Alerts</div>
+          <div class="value" id="lowStockDisplay" style="color: #D3453C;">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="title">Active Categories</div>
+          <div class="value" id="categoriesDisplay">0</div>
+        </div>
+      </div>
+
+      <div class="data-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Item Name</th>
+              <th>Category</th>
+              <th>In Stock</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody">
+            <tr>
+              <td colspan="4" style="text-align:center;">Loading inventory records...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/dashboard.js"></script>
+</body>
+</html>

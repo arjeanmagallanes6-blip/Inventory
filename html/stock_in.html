@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Warehouse - Stock In / Receiving</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+    #app { display: flex; width: 100%; min-height: 100vh; }
+    .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .content-area { width: 100% !important; max-width: 100% !important; padding: 2rem; box-sizing: border-box; }
+    .card { width: 100% !important; max-width: 100% !important; }
+
+    /* Pending Purchase Orders */
+    .data-table-container:has(#pendingPoTableBody) {
+        width: 70% !important; min-width: min-content; max-width: 100%; margin-left: 0; margin-right: auto;
+    }
+    table.table-compact:has(#pendingPoTableBody) { width: 100% !important; }
+    table.table-compact:has(#pendingPoTableBody) th,
+    table.table-compact:has(#pendingPoTableBody) td { padding: 10px 24px !important; white-space: nowrap; }
+    table.table-compact:has(#pendingPoTableBody) td[colspan] { text-align: center; white-space: normal; }
+    table.table-compact:has(#pendingPoTableBody) th:last-child,
+    table.table-compact:has(#pendingPoTableBody) td:last-child { width: 1%; }
+
+    /* Stock Receiving History: 8 columns, full width */
+    .data-table-container:has(#stockInTableBody) { width: 100% !important; min-width: 0; }
+    table.table-compact:has(#stockInTableBody) th,
+    table.table-compact:has(#stockInTableBody) td { padding: 8px 12px !important; white-space: normal; }
+    table.table-compact:has(#stockInTableBody) td:first-child { white-space: nowrap; }
+
+    .custom-modal { display: none; position: fixed; z-index: 1050; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; }
+    .custom-modal-content { background-color: #fff; margin: 3% auto; padding: 24px; border-radius: 8px; max-width: 900px; }
+    .nav-icon { font-style: normal; margin-right: 8px; display: inline-block; }
+
+    @media print {
+        body * { visibility: hidden; }
+        #printableReceipt, #printableReceipt * { visibility: visible; }
+        #printableReceipt { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+        .no-print { display: none !important; }
+    }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">📦</div>
+      <h2>ABC Warehouse<br><span style="font-size:11px; font-weight:400; opacity:0.8;">School Supply</span></h2>
+    </div>
+
+    <nav>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="nav-icon">📊</i> Inventory</a></li>
+        <li class="nav-item"><a href="product_master.html" class="nav-link"><i class="nav-icon">📋</i> Product Master</a></li>
+        <li class="nav-item"><a href="purchase_orders.html" class="nav-link"><i class="nav-icon">📑</i> Purchase Orders</a></li>
+        <li class="nav-item"><a href="stock_in.html" class="nav-link active"><i class="nav-icon">📥</i> Stock In</a></li>
+        <li class="nav-item"><a href="stock_out.html" class="nav-link"><i class="nav-icon">📤</i> Stock Out</a></li>
+        <li class="nav-item"><a href="shelf.html" class="nav-link"><i class="nav-icon">🗄️</i> Shelves</a></li>
+        <li class="nav-item"><a href="supplier.html" class="nav-link"><i class="nav-icon">🚚</i> Suppliers</a></li>
+        <li class="nav-item"><a href="item_supplier.html" class="nav-link"><i class="nav-icon">🔗</i> Item-Supplier Mapping</a></li>
+        <li class="nav-item"><a href="category.html" class="nav-link"><i class="nav-icon">📁</i> Category</a></li>
+        <li class="nav-item"><a href="brand.html" class="nav-link"><i class="nav-icon">🏷️</i> Brand</a></li>
+        <li class="nav-item"><a href="units.html" class="nav-link"><i class="nav-icon">📏</i> Units</a></li>
+        <li class="nav-item"><a href="stock_adjustment.html" class="nav-link"><i class="nav-icon">⚖️</i> Stock Adjustment</a></li>
+        <li class="nav-item"><a href="payments.html" class="nav-link"><i class="nav-icon">💳</i> Payments</a></li>
+        <li class="nav-item"><a href="returns.html" class="nav-link"><i class="nav-icon">↩️</i> Customer Returns</a></li>
+        <li class="nav-item"><a href="purchase_returns.html" class="nav-link"><i class="nav-icon">📦</i> Purchase Returns</a></li>
+        <li class="nav-item"><a href="users.html" class="nav-link"><i class="nav-icon">👥</i> Users &amp; Roles</a></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" id="logoutBtn" class="nav-link"><i class="nav-icon">🚪</i> Log out</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <span class="page-title">Stock In / Stock Receiving</span>
+    </header>
+
+    <div class="content-area">
+      <!-- Section 1: Purchase Orders waiting to be received -->
+      <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h5 class="m-0 text-primary fw-bold">Pending Purchase Orders for Receiving</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="data-table-container">
+            <table class="table table-hover align-middle mb-0 table-compact">
+              <thead class="table-light">
+                <tr>
+                  <th>PO Number</th>
+                  <th>Supplier</th>
+                  <th>Order Date</th>
+                  <th>Received / Ordered</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="pendingPoTableBody">
+                <tr><td colspan="6" class="text-center">Loading pending purchase orders...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Stock-in history -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h5 class="m-0 text-secondary fw-bold">Stock Receiving History</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="data-table-container">
+            <table class="table table-hover align-middle mb-0 table-compact">
+              <thead class="table-light">
+                <tr>
+                  <th>PO Number</th>
+                  <th>Item Received</th>
+                  <th>Qty</th>
+                  <th>Unit Cost</th>
+                  <th>Total Cost</th>
+                  <th>Supplier</th>
+                  <th>Delivery Date</th>
+                  <th>Date Received</th>
+                </tr>
+              </thead>
+              <tbody id="stockInTableBody">
+                <tr><td colspan="8" class="text-center">Loading stock history...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modal 1: Receive stock against a PO -->
+<div id="receivePoModal" class="custom-modal">
+  <div class="custom-modal-content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="m-0 fw-bold" id="modalPoTitle">Receive Stock for Purchase Order</h5>
+      <button type="button" class="btn-close" id="closeReceiveModalBtn"></button>
+    </div>
+
+    <div id="modalAlert" class="alert d-none py-2 mb-3"></div>
+
+    <form id="receivePoForm">
+      <input type="hidden" id="receive_po_id" name="purchase_order_id">
+
+      <div class="row mb-3 bg-light p-2 rounded mx-0">
+        <div class="col-4">
+          <small class="text-muted d-block">Supplier:</small>
+          <strong id="displaySupplierName">-</strong>
+        </div>
+        <div class="col-4">
+          <small class="text-muted d-block">Order Date:</small>
+          <strong id="displayOrderDate">-</strong>
+        </div>
+        <div class="col-4">
+          <label for="delivery_date" class="form-label mb-0"><small class="text-muted">Delivery Date</small></label>
+          <input type="date" class="form-control form-control-sm" id="delivery_date" name="delivery_date">
+        </div>
+      </div>
+
+      <h6 class="fw-bold mb-2">PO Line Items:</h6>
+      <div class="table-responsive mb-3">
+        <table class="table table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Item Name</th>
+              <th style="width: 9%;">Ordered</th>
+              <th style="width: 10%;">Received</th>
+              <th style="width: 14%;">Receiving Qty</th>
+              <th style="width: 12%;">Unit Price</th>
+              <th style="width: 13%;">Total</th>
+            </tr>
+          </thead>
+          <tbody id="receivePoItemsBody"></tbody>
+          <tfoot>
+            <tr class="table-secondary fw-bold">
+              <td colspan="5" class="text-end">Grand Total:</td>
+              <td id="modalGrandTotal">₱0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="text-end">
+        <button type="button" class="btn btn-secondary" id="cancelReceiveModalBtn">Cancel</button>
+        <button type="submit" class="btn btn-success" id="confirmReceiveBtn">Confirm &amp; Update Stock</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 2: Receiving receipt -->
+<div id="receiptModal" class="custom-modal">
+  <div class="custom-modal-content" style="max-width: 650px;">
+    <div id="printableReceipt" class="p-3">
+      <div class="text-center mb-4 border-bottom pb-3">
+        <h3 class="fw-bold m-0">ABC WAREHOUSE</h3>
+        <p class="text-muted mb-1" style="font-size: 13px;">School Supply &amp; Stationery Inventory</p>
+        <span class="badge bg-success fs-6">STOCK RECEIVING RECEIPT</span>
+      </div>
+
+      <div class="row mb-3" style="font-size: 14px;">
+        <div class="col-6">
+          <div><strong>PO Number:</strong> <span id="receiptPoNumber">-</span></div>
+          <div><strong>Supplier:</strong> <span id="receiptSupplier">-</span></div>
+        </div>
+        <div class="col-6 text-end">
+          <div><strong>Date Received:</strong> <span id="receiptDate">-</span></div>
+          <div><strong>Delivery Date:</strong> <span id="receiptDelivery">-</span></div>
+        </div>
+      </div>
+
+      <table class="table table-sm table-bordered align-middle mb-3" style="font-size: 14px;">
+        <thead class="table-light">
+          <tr>
+            <th>Item Name</th>
+            <th class="text-center" style="width: 12%;">Qty</th>
+            <th class="text-end" style="width: 20%;">Unit Price</th>
+            <th class="text-end" style="width: 20%;">Total Price</th>
+          </tr>
+        </thead>
+        <tbody id="receiptItemsBody"></tbody>
+        <tfoot>
+          <tr class="fw-bold table-light">
+            <td colspan="3" class="text-end">TOTAL AMOUNT:</td>
+            <td class="text-end" id="receiptGrandTotal">₱0.00</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="mt-4 pt-3 border-top text-center text-muted" style="font-size: 12px;">
+        <em>Received and Verified into Inventory System.</em>
+      </div>
+    </div>
+
+    <div class="text-end mt-3 no-print">
+      <button type="button" class="btn btn-primary me-2" onclick="window.print()">🖨️ Print Receipt</button>
+      <button type="button" class="btn btn-secondary" id="closeReceiptBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/stock_in.js?v=5"></script>
+</body>
+</html>
