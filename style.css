@@ -11,8 +11,8 @@
   --sidebar-width: 240px;
 }
 
-* { 
-  box-sizing: border-box; 
+* {
+  box-sizing: border-box;
 }
 
 html, body {
@@ -50,8 +50,8 @@ html, body {
   max-width: 520px;
 }
 
-@media (prefers-reduced-motion: reduce) { 
-  .card { animation: none; } 
+@media (prefers-reduced-motion: reduce) {
+  .card { animation: none; }
 }
 
 @keyframes rise {
@@ -71,9 +71,9 @@ html, body {
   flex-shrink: 0;
 }
 
-.logo svg { 
-  width: 22px; 
-  height: 22px; 
+.logo svg {
+  width: 22px;
+  height: 22px;
 }
 
 h1 {
@@ -97,8 +97,8 @@ label {
   margin-bottom: 6px;
 }
 
-.field { 
-  margin-bottom: 16px; 
+.field {
+  margin-bottom: 16px;
 }
 
 .field-row {
@@ -150,8 +150,8 @@ select {
 }
 
 input::placeholder,
-textarea::placeholder { 
-  color: #9BB0C4; 
+textarea::placeholder {
+  color: #9BB0C4;
 }
 
 input.form-control:focus,
@@ -186,14 +186,14 @@ textarea:focus {
   text-decoration: none;
 }
 
-.btn:hover { 
-  background: #105a99; 
+.btn:hover {
+  background: #105a99;
   color: var(--white);
 }
 
-.btn:focus-visible { 
-  outline: none; 
-  box-shadow: 0 0 0 3px rgba(20, 103, 176, 0.35); 
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(20, 103, 176, 0.35);
 }
 
 /* Full-width submit button for login & card forms */
@@ -250,14 +250,14 @@ textarea:focus {
   margin-top: 22px;
 }
 
-a.link { 
-  color: var(--blue); 
-  text-decoration: none; 
-  font-weight: 500; 
+a.link {
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 500;
 }
 
-a.link:hover { 
-  text-decoration: underline; 
+a.link:hover {
+  text-decoration: underline;
 }
 
 /* Dashboard Layout */
@@ -267,6 +267,7 @@ a.link:hover {
   width: 100%;
 }
 
+/* Sidebar: fixed sa screen (dili mo-uban sa page scroll) ug scrollable ang menu kung taas */
 .sidebar {
   width: var(--sidebar-width);
   background: var(--deep-blue);
@@ -274,6 +275,36 @@ a.link:hover {
   display: flex;
   flex-direction: column;
   padding: 24px 16px;
+  flex-shrink: 0;
+
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Dili mo-shrink ang mga bahin sa sidebar kung gamay ang screen */
+.sidebar-header,
+.sidebar nav,
+.sidebar-footer {
   flex-shrink: 0;
 }
 
@@ -305,14 +336,14 @@ a.link:hover {
   height: 20px;
 }
 
-.nav-list { 
-  list-style: none; 
-  padding: 0; 
-  margin: 0; 
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.nav-item { 
-  margin-bottom: 4px; 
+.nav-item {
+  margin-bottom: 4px;
 }
 
 .nav-link {
@@ -371,19 +402,19 @@ a.link:hover {
   padding: 0 32px;
 }
 
-.page-title { 
-  font-size: 18px; 
-  font-weight: 700; 
-  color: var(--ink); 
+.page-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
 }
 
-.user-badge { 
-  font-size: 13px; 
-  color: var(--ink-dim); 
+.user-badge {
+  font-size: 13px;
+  color: var(--ink-dim);
 }
 
-.user-badge strong { 
-  color: var(--ink); 
+.user-badge strong {
+  color: var(--ink);
 }
 
 .content-area {
@@ -406,17 +437,17 @@ a.link:hover {
   border: 1px solid var(--line);
 }
 
-.stat-card .title { 
-  font-size: 13px; 
-  color: var(--ink-dim); 
-  margin-bottom: 6px; 
-  font-weight: 500; 
+.stat-card .title {
+  font-size: 13px;
+  color: var(--ink-dim);
+  margin-bottom: 6px;
+  font-weight: 500;
 }
 
-.stat-card .value { 
-  font-size: 24px; 
-  font-weight: 700; 
-  color: var(--ink); 
+.stat-card .value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
 }
 
 /* --- TABLE STYLES (auto layout, no inner vertical scroll) --- */
@@ -428,33 +459,33 @@ a.link:hover {
   width: 100%;
 }
 
-table { 
-  width: 100%; 
-  border-collapse: collapse; 
-  text-align: left; 
-  font-size: 13px; 
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
   table-layout: auto; /* ang sulod na ang mo-determine sa lapad sa columns */
 }
 
-th { 
-  background: var(--sky-light); 
-  padding: 8px 10px !important; 
-  font-weight: 600; 
-  color: var(--ink); 
-  border-bottom: 1px solid var(--line); 
+th {
+  background: var(--sky-light);
+  padding: 8px 10px !important;
+  font-weight: 600;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
   white-space: nowrap;
 }
 
-td { 
-  padding: 8px 10px !important; 
-  border-bottom: 1px solid var(--line); 
-  color: var(--ink); 
+td {
+  padding: 8px 10px !important;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
   vertical-align: middle;
   overflow-wrap: break-word;
 }
 
-tr:last-child td { 
-  border-bottom: none; 
+tr:last-child td {
+  border-bottom: none;
 }
 
 /* Minimum widths para dili ma-squeeze ang importante nga columns */
@@ -473,22 +504,22 @@ table td:last-child .btn {
 }
 
 .badge {
-  padding: 3px 6px !important; 
-  border-radius: 6px; 
-  font-size: 11px !important; 
-  font-weight: 500; 
+  padding: 3px 6px !important;
+  border-radius: 6px;
+  font-size: 11px !important;
+  font-weight: 500;
   display: inline-block;
   margin: 2px 0 !important;
 }
 
-.badge-success { 
-  background: #E6F4EA; 
-  color: #137333; 
+.badge-success {
+  background: #E6F4EA;
+  color: #137333;
 }
 
-.badge-warning { 
-  background: #FEF7E0; 
-  color: #B06000; 
+.badge-warning {
+  background: #FEF7E0;
+  color: #B06000;
 }
 
 /* Compact table: magsugod sa wala (pinaka una) ug moabot hangtod sa tungatunga sa page */

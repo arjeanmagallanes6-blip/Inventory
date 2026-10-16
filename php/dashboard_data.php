@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/stock_helper.php';
 
 // Ensure session is started if not already handled in db.php
 if (session_status() === PHP_SESSION_NONE) {
@@ -10,28 +11,25 @@ header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode([
-        'success' => false, 
-        'unauthorized' => true, 
+        'success' => false,
+        'unauthorized' => true,
         'message' => 'Unauthorized access.'
     ]);
     exit;
 }
 
 try {
-    // 1. Fetch active category count
-    $stmtCat = $pdo->query("SELECT COUNT(*) AS total FROM category");
+    // 1. Active category count (excluding soft-deleted)
+    $stmtCat = $pdo->query("SELECT COUNT(*) AS total FROM category WHERE is_deleted = 0");
     $active_categories = (int)($stmtCat->fetch()['total'] ?? 0);
 
-    // 2. Fetch inventory with stock calculations (excluding soft-deleted items)
+    // 2. Inventory using the full stock formula (see stock_helper.php)
     $stmtItems = $pdo->query("
-        SELECT 
-            i.item_name, 
-            c.category_name, 
+        SELECT
+            i.item_name,
+            c.category_name,
             i.minimum_stock,
-            (
-                COALESCE((SELECT SUM(sid.quantity) FROM stock_in_details sid WHERE sid.item_id = i.item_id), 0) -
-                COALESCE((SELECT SUM(sod.quantity) FROM stock_out_details sod WHERE sod.item_id = i.item_id), 0)
-            ) AS in_stock
+            " . stock_expr('i') . " AS in_stock
         FROM items i
         LEFT JOIN category c ON i.category_id = c.category_id
         WHERE i.is_deleted = 0
@@ -65,8 +63,8 @@ try {
     ]);
 } catch (PDOException $e) {
     echo json_encode([
-        'success' => false, 
-        'unauthorized' => false, 
+        'success' => false,
+        'unauthorized' => false,
         'message' => 'Database Query Error: ' . $e->getMessage()
     ]);
 }

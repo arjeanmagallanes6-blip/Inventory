@@ -16,12 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Fetch user details and role name
         $stmt = $pdo->prepare("
-            SELECT u.user_id, u.first_name, u.last_name, u.username, u.password, u.status, r.role_name 
+            SELECT u.user_id, u.first_name, u.last_name, u.username, u.password, u.status, r.role_name
             FROM users u
             INNER JOIN role r ON u.role_id = r.role_id
-            WHERE u.username = :username
+            WHERE u.username = :username AND u.is_deleted = 0
         ");
         $stmt->execute([':username' => $username]);
         $user = $stmt->fetch();
@@ -30,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user['status'] !== 'Active') {
                 $response['message'] = 'Account is inactive. Please contact an admin.';
             } elseif (password_verify($password, $user['password'])) {
-                // Set session variables upon successful login
+                session_regenerate_id(true);
+
                 $_SESSION['user_id']   = $user['user_id'];
                 $_SESSION['username']  = $user['username'];
                 $_SESSION['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
@@ -47,13 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (PDOException $e) {
         $response['message'] = 'Database error: ' . $e->getMessage();
     }
-
-            $stmt = $pdo->prepare("
-            SELECT u.user_id, u.first_name, u.last_name, u.username, u.password, u.status, r.role_name
-            FROM users u
-            INNER JOIN role r ON u.role_id = r.role_id
-            WHERE u.username = :username AND u.is_deleted = 0
-        ");
 }
 
 echo json_encode($response);

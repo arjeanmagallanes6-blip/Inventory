@@ -168,6 +168,8 @@ try {
                 echo json_encode(['success' => false, 'message' => 'Receiving quantity is more than the quantity still to be received.']);
                 exit;
             }
+
+            // Push 3 values: item_id, received_qty, unit_cost
             $toInsert[] = [$item_id, $received, (float)$lines[$item_id]['unit_cost']];
         }
 
@@ -178,7 +180,7 @@ try {
 
         $pdo->beginTransaction();
 
-        // 1. stock_in header
+        // 1. STOCK_IN header insertion (ERD: stock_in_id, purchase_order_id, supplier_id, user_id, stock_in_date, delivery_date)
         $pdo->prepare("
             INSERT INTO stock_in (purchase_order_id, supplier_id, user_id, stock_in_date, delivery_date)
             VALUES (:po_id, :supplier_id, :user_id, NOW(), :delivery_date)
@@ -190,26 +192,31 @@ try {
         ]);
         $stock_in_id = $pdo->lastInsertId();
 
-        // 2. stock_in_details
+        // 2. STOCK_IN_DETAILS insertion (ERD: stock_in_details_id, stock_in_id, item_id, quantity, unit_cost, total_cost, batch_no)
         $stmtDetail = $pdo->prepare("
-            INSERT INTO stock_in_details (stock_in_id, item_id, quantity, unit_cost, total_cost)
-            VALUES (:stock_in_id, :item_id, :quantity, :unit_cost, :total_cost)
+            INSERT INTO stock_in_details (stock_in_id, item_id, quantity, unit_cost, total_cost, batch_no)
+            VALUES (:stock_in_id, :item_id, :quantity, :unit_cost, :total_cost, :batch_no)
         ");
+
+        // Unpack matching 3 variables: $item_id, $received, $unitCost
         foreach ($toInsert as [$item_id, $received, $unitCost]) {
+            $batch = null;
+
             $stmtDetail->execute([
                 ':stock_in_id' => $stock_in_id,
                 ':item_id'     => $item_id,
                 ':quantity'    => $received,
                 ':unit_cost'   => $unitCost,
-                ':total_cost'  => $unitCost * $received
+                ':total_cost'  => $unitCost * $received,
+                ':batch_no'    => $batch
             ]);
         }
 
         $pdo->commit();
-
         echo json_encode(['success' => true, 'message' => 'Stock received successfully!']);
         exit;
     }
+
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();

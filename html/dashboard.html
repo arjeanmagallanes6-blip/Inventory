@@ -6,23 +6,21 @@
     <title>ABC Warehouse - Dashboard</title>
     <link rel="stylesheet" href="../style.css">
     <style>
-        /* Limit main layout width to keep elements close together */
         .content-area {
-            max-width: 850px !important; /* Dili na mo-stretch sa tibuok screen */
+            max-width: 850px !important;
             margin: 0 !important;
         }
 
-        /* Compact Stat Cards (Nagsikit sa left side) */
         .grid-stats {
             display: flex !important;
             flex-wrap: wrap;
-            gap: 12px !important; /* Gamay ra nga gintang sa mga cards */
+            gap: 12px !important;
             justify-content: flex-start !important;
             margin-bottom: 20px;
         }
 
         .stat-card {
-            width: 220px !important; /* Fixed width para dili ma-elongate */
+            width: 220px !important;
             flex: 0 0 220px !important;
             padding: 12px 16px !important;
         }
@@ -37,7 +35,6 @@
             font-weight: bold;
         }
 
-        /* Compact Table Layout */
         .data-table-container {
             max-width: 850px !important;
             background: #ffffff;
@@ -48,22 +45,20 @@
 
         table {
             width: 100%;
-            table-layout: fixed; /* Subay sa explicit column widths below */
+            table-layout: fixed;
             border-collapse: collapse;
         }
 
-        /* Explicit tight widths para magduol ang mga columns */
-        table th:nth-child(1), table td:nth-child(1) { width: 300px; } /* Item Name */
-        table th:nth-child(2), table td:nth-child(2) { width: 200px; } /* Category */
-        table th:nth-child(3), table td:nth-child(3) { width: 140px; } /* In Stock */
-        table th:nth-child(4), table td:nth-child(4) { width: 160px; } /* Status */
+        table th:nth-child(1), table td:nth-child(1) { width: 300px; }
+        table th:nth-child(2), table td:nth-child(2) { width: 200px; }
+        table th:nth-child(3), table td:nth-child(3) { width: 140px; }
+        table th:nth-child(4), table td:nth-child(4) { width: 160px; }
 
         table th, table td {
-            padding: 10px 14px !important; /* Pahuot nga padding */
+            padding: 10px 14px !important;
             text-align: left;
         }
 
-        /* Animations & Status Badges */
         @keyframes pulse-blink {
             0% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.3; transform: scale(0.98); }
@@ -188,5 +183,6 @@
 </div>
 
 <script src="../js/dashboard.js"></script>
+<script src="../js/access.js"></script>
 </body>
 </html>
